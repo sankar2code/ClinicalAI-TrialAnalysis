@@ -1,2 +1,2 @@
-# ClinicalTrialAnalysis
-A source-backed clinical trial investigator that takes a single NCT ID and returns ranked, evidence-labeled hypotheses for why a trial failed — pulling only from public records like ClinicalTrials.gov and PubMed, with facts, inferences, and hypotheses clearly separated so it never overstates causality.
+# ClinicalAI-TrialAnalysis
+Paste an NCT ID for any registered trial. If it was terminated, withdrawn, or suspended, we rank the likely reasons why — every claim labeled Fact, Inference, or Hypothesis so it never overstates what's known. If it completed or is still running, there's no failure to explain, so you get the facts instead: results, enrollment, sites, and linked publications. Built entirely from public ClinicalTrials.gov and PubMed data

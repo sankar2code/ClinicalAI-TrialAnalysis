@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light values are the canonical design.md palette, unchanged. Dark
+   values are this app's own extension — design.md documented the source
+   Airbnb system as light-only by design; these were chosen to preserve
+   the same relationships (Rausch stays the one accent, epistemic tags
+   stay on the ink/muted ramp, never colored) rather than a naive invert.
+   Toggled via a `.dark` class on <html> — see components/ThemeToggle.tsx
+   and the blocking script in app/layout.tsx that sets it before paint. */
+:root {
+  --color-canvas: #ffffff;
+  --color-ink: #222222;
+  --color-body: #3f3f3f;
+  --color-muted: #6a6a6a;
+  --color-muted-soft: #929292;
+  --color-primary: #ff385c;
+  --color-primary-active: #e00b41;
+  --color-primary-disabled: #ffd1da;
+  --color-on-primary: #ffffff;
+  --color-surface-soft: #f7f7f7;
+  --color-surface-strong: #f2f2f2;
+  --color-hairline: #dddddd;
+  --color-hairline-soft: #ebebeb;
+  --color-border-strong: #c1c1c1;
+  --color-error: #c13515;
+  --color-error-hover: #b32505;
+  --color-legal-link: #428bff;
+  /* Third scoped exception to single-accent: real-time validation
+     feedback on analyze-bar-pill/nav-search only, mirroring --color-error
+     the same way a green "valid" state mirrors red "invalid" in any
+     form. Same green hue as stat-completed-accent for visual
+     consistency across the app's (still very limited) use of green. */
+  --color-success: #15803d;
+  /* Third state on the same bars: value is a valid *prefix* of the
+     pattern (still being typed, not yet complete/not yet wrong).
+     Distinct from stat-active-accent's amber — that's a trial-status
+     color, this is a form-state color; keeping them different hues
+     avoids the two concepts bleeding into each other visually. */
+  --color-pending: #a16207;
+  --shadow-card: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0;
+  /* Decorative-only, HeroPreviewCard's stacked back-cards. NOT part of
+     the core token system — everywhere else in this app deliberately
+     stays single-accent (Rausch only, never color-coded). This is a
+     scoped exception for one aria-hidden landing-page graphic, kept soft
+     and pastel rather than saturated so it still reads as premium, not
+     like a generic template's rainbow accent. */
+  --color-hero-tint-a: #eef4fb;
+  --color-hero-tint-b: #fdf1e6;
+  /* Second scoped exception to single-accent, for live-trial-stats
+     (components/LiveTrialStats.tsx) only — see design.md. Four literal
+     status categories, not a certainty/quality judgment, so distinct
+     hues don't collide with the epistemic-tag discipline above; kept to
+     a soft tinted card edge + pill outline, never the number itself. */
+  --color-stat-terminated-bg: #fdecee;
+  --color-stat-terminated-accent: #be123c;
+  --color-stat-completed-bg: #eafaf0;
+  --color-stat-completed-accent: #15803d;
+  --color-stat-recruiting-bg: #eef4fb;
+  --color-stat-recruiting-accent: #1d4ed8;
+  --color-stat-active-bg: #fdf1e6;
+  --color-stat-active-accent: #b45309;
+}
+
+.dark {
+  --color-canvas: #16151a;
+  --color-ink: #f2f0ed;
+  --color-body: #c9c6c0;
+  --color-muted: #9c988f;
+  --color-muted-soft: #6f6b64;
+  --color-primary: #ff4d70;
+  --color-primary-active: #ff2d54;
+  --color-primary-disabled: #4d2530;
+  --color-on-primary: #ffffff;
+  --color-surface-soft: #201f24;
+  --color-surface-strong: #28272c;
+  --color-hairline: #333138;
+  --color-hairline-soft: #2a292e;
+  --color-border-strong: #4a484f;
+  --color-error: #ff6b52;
+  --color-error-hover: #ff8268;
+  --color-legal-link: #6ba3ff;
+  --color-success: #4ade80;
+  --color-pending: #facc15;
+  --shadow-card: rgba(255, 255, 255, 0.06) 0 0 0 1px, rgba(0, 0, 0, 0.5) 0 2px 6px 0, rgba(0, 0, 0, 0.6) 0 4px 8px 0;
+  --color-hero-tint-a: #1c2733;
+  --color-hero-tint-b: #2b2418;
+  --color-stat-terminated-bg: #2a1519;
+  --color-stat-terminated-accent: #fb7185;
+  --color-stat-completed-bg: #12241a;
+  --color-stat-completed-accent: #4ade80;
+  --color-stat-recruiting-bg: #1c2733;
+  --color-stat-recruiting-accent: #60a5fa;
+  --color-stat-active-bg: #2b2418;
+  --color-stat-active-accent: #fbbf24;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  @apply bg-canvas text-ink font-sans;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  /* overflow-wrap is inherited, so this fixes long-word overflow
+     (e.g. "pharmacokinetics/pharmacodynamics" in AI-generated analysis
+     text) everywhere in one place, rather than patching every component.
+     Every page's <main> uses flex flex-col, and flex items default to
+     min-width: auto — they refuse to shrink below the width of their
+     longest unbreakable text run, forcing horizontal overflow on mobile
+     unless the browser is explicitly allowed to break within a word. */
+  overflow-wrap: break-word;
+  /* Defensive backstop: nothing in this app intentionally scrolls
+     horizontally, so if some other overflow source ever slips through,
+     clip it instead of letting the whole page gain a horizontal
+     scrollbar on mobile. */
+  overflow-x: hidden;
+}
+
+/* Confidence-meter and skeleton blocks are deliberately static —
+   design.md specifies no shimmer/pulse motion for this app. The one
+   deliberate exception: AnalysisStageIcon, which swaps to a different,
+   literal icon per loading stage (record → journal → brain, matching
+   AnalysisProgress's status text) and gently breathes while each one is
+   showing, since the reasoning call is genuinely long (20-40s) and needs
+   some visual life. Remounts on stage change (key={stageIndex} in the
+   component), which restarts this animation fresh each time. */
+@keyframes stage-icon-pulse {
+  0%, 100% { transform: scale(0.94); opacity: 0.75; }
+  50% { transform: scale(1.04); opacity: 1; }
+}
+.stage-icon-pulse {
+  animation: stage-icon-pulse 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-icon-pulse {
+    animation: none;
+  }
+}
+
+/* HeroPreviewCard's entrance — plays once on every homepage load/refresh,
+   staggered per layer (back card first, front card last) via
+   animation-delay set inline per element. Hover fan-out is plain
+   Tailwind `transition-transform` + `group-hover:`, no keyframes needed
+   for that part. */
+@keyframes hero-card-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.hero-card-in {
+  animation: hero-card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-in {
+    animation: none;
+  }
+}
+
+/* live-trial-stats' status icons — continuous idle bob/scale so they
+   read as alive alongside RollingNumber's roll, independent of the
+   card's own hover:scale (applied to a wrapping span, not this element,
+   for the same reason hero-card-in's transform is split across two
+   elements — a running animation's transform would otherwise fight the
+   hover utility on the same node). animation-delay is set per-icon
+   inline so the 4 cards don't bob in lockstep. */
+@keyframes stat-icon-motion {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.08); }
+}
+.stat-icon-motion {
+  animation: stat-icon-motion 2.4s ease-in-out infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stat-icon-motion {
+    animation: none;
+  }
+}

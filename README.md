@@ -1,5 +1,7 @@
 # ClinicalAI-Trial Analysis
 
+![Homepage demo — status cards animating in with live ClinicalTrials.gov counts, then the hero card stack fanning out on hover](docs/media/homepage-demo.gif)
+
 Paste an NCT ID for any registered clinical trial. If it was terminated, withdrawn, or suspended, the app ranks the likely reasons why — every claim labeled **Fact**, **Inference**, or **Hypothesis** so it never overstates what's known. If the trial completed or is still running, there's no failure to explain, so it returns a plain factual snapshot instead: results, enrollment, sites, and linked publications. Built entirely from public [ClinicalTrials.gov](https://clinicaltrials.gov/) and [PubMed](https://pubmed.ncbi.nlm.nih.gov/) data — no accounts, no saved history.
 
 ## Features

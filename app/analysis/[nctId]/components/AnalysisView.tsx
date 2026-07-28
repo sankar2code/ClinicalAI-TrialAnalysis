@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AnalyzeApiResponse } from "@/lib/schema/analysisResult";
+import type { AnalyzeApiResponse, UpstreamSource } from "@/lib/schema/analysisResult";
 import AnalysisProgress from "./AnalysisProgress";
 import TrialStatusTag from "./TrialStatusTag";
 import BottomLineCard from "./BottomLineCard";
@@ -16,7 +16,7 @@ import TrialSnapshotCard from "./TrialSnapshotCard";
 
 type FetchState =
   | { phase: "loading" }
-  | { phase: "error"; kind: "not_found" | "invalid_format" | "server" }
+  | { phase: "error"; kind: "not_found" | "invalid_format" | "server"; source?: UpstreamSource }
   | { phase: "done"; result: Extract<AnalyzeApiResponse, { status: "analyzed" | "snapshot" }> };
 
 // Fetches GET /api/analyze/[nctId] client-side (rather than the server
@@ -49,7 +49,7 @@ export default function AnalysisView({ nctId }: { nctId: string }) {
               : body.error === "invalid_format"
                 ? "invalid_format"
                 : "server";
-          setState({ phase: "error", kind });
+          setState({ phase: "error", kind, source: body.source });
           return;
         }
         setState({ phase: "done", result: body });
@@ -88,7 +88,7 @@ export default function AnalysisView({ nctId }: { nctId: string }) {
     }
     return (
       <main className="mx-auto max-w-content px-4 py-section">
-        <UpstreamErrorState />
+        <UpstreamErrorState source={state.source} />
       </main>
     );
   }

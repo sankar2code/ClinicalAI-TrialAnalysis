@@ -9,8 +9,20 @@ export function toErrorResponse(err: unknown): NextResponse {
     return NextResponse.json({ error: "trial_not_found" }, { status: 404 });
   }
 
-  if (err instanceof CtGovUpstreamError || err instanceof AnthropicUpstreamError) {
-    return NextResponse.json({ error: "upstream_failure", retryable: true }, { status: 502 });
+  if (err instanceof CtGovUpstreamError) {
+    console.error("ClinicalTrials.gov upstream failure:", err.message);
+    return NextResponse.json(
+      { error: "upstream_failure", retryable: true, source: "clinicaltrials_gov" },
+      { status: 502 }
+    );
+  }
+
+  if (err instanceof AnthropicUpstreamError) {
+    console.error("Reasoning-service upstream failure:", err.message);
+    return NextResponse.json(
+      { error: "upstream_failure", retryable: true, source: "reasoning_service" },
+      { status: 502 }
+    );
   }
 
   if (err instanceof AnalysisSchemaError) {

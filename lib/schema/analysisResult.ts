@@ -109,6 +109,13 @@ export interface TrialSnapshot {
   ctgovUrl: string;
 }
 
+// Which external dependency actually failed — surfaced to the user so
+// "something went wrong" can name the real cause instead of hiding it.
+// PubMed has no entry here: lib/clients/pubmed.ts always degrades
+// gracefully (empty publication list) rather than failing the request,
+// so it can never be the source of an upstream_failure.
+export type UpstreamSource = "clinicaltrials_gov" | "reasoning_service";
+
 // The four shapes GET /api/analyze/[nctId] can return, per
 // engineering-doc.md Section 9.
 export type AnalyzeApiResponse =
@@ -116,5 +123,5 @@ export type AnalyzeApiResponse =
   | { status: "snapshot"; trial: TrialMeta; snapshot: TrialSnapshot }
   | { error: "invalid_format" }
   | { error: "trial_not_found" }
-  | { error: "upstream_failure"; retryable: true }
+  | { error: "upstream_failure"; retryable: true; source: UpstreamSource }
   | { error: "internal_error" };

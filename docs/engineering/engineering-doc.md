@@ -100,12 +100,12 @@ Format: `User Action → Frontend Behavior → Backend Processing → Database I
 4. **Database Interaction:** Cache write for the evidence packet (still useful if the trial's status changes later or is re-queried).
 5. **System Response:** `200 OK` with `{ status: "not_applicable", overallStatus, message }`. Frontend states plainly that the trial completed as planned or is still active.
 
-### 4.5 Upstream Failure (ClinicalTrials.gov / NCBI / Anthropic API error)
+### 4.5 Upstream Failure (ClinicalTrials.gov / Anthropic API error)
 1. **User Action:** Same as 4.1.
-2. **Frontend Behavior:** Loading state, then a retry-able error card if the backend ultimately fails.
-3. **Backend Processing:** On any upstream failure, retry once with exponential backoff (500ms base). If the retry also fails: for PubMed specifically, degrade gracefully and continue the pipeline with a "no publication data available" note; for ClinicalTrials.gov or Anthropic, fail the request entirely rather than render partial/unlabeled output.
+2. **Frontend Behavior:** Loading state, then a retry-able error card if the backend ultimately fails — `{component.upstream-error-state}` names the specific dependency that failed ("ClinicalTrials.gov isn't responding" vs. "The reasoning service is busy") rather than a generic message, plus `{component.upstream-error-illustration}`.
+3. **Backend Processing:** On any upstream failure, retry once with exponential backoff (500ms base). If the retry also fails: for PubMed specifically, degrade gracefully and continue the pipeline with a "no publication data available" note — PubMed can never trigger this flow at all, since `lib/clients/pubmed.ts` never throws; for ClinicalTrials.gov or Anthropic, fail the request entirely rather than render partial/unlabeled output.
 4. **Database Interaction:** None on failure (no partial cache writes).
-5. **System Response:** `502`/`503` with `{ error: "upstream_failure", retryable: true }`. Frontend shows "Something went wrong — try again" with a retry button; never renders a partially-parsed result.
+5. **System Response:** `502`/`503` with `{ error: "upstream_failure", retryable: true, source: "clinicaltrials_gov" | "reasoning_service" }` (`lib/errors.ts` tags the source from which exception type was thrown). Frontend shows the source-specific message with a retry button; never renders a partially-parsed result.
 
 ### 4.6 Benchmark Curation & Prompt Review (internal, maintainer-only, no UI)
 1. **User Action:** Maintainer runs `scripts/run-benchmark.ts` after a prompt/taxonomy revision.
@@ -166,7 +166,8 @@ app/
         ├── TrialStatusTag.tsx
         ├── TrialSnapshotCard.tsx  (non-failure statuses — fact-only, zero LLM calls)
         ├── NotFoundState.tsx
-        ├── UpstreamErrorState.tsx
+        ├── UpstreamErrorState.tsx  (source-specific message — "ClinicalTrials.gov isn't responding" vs. "reasoning service is busy")
+        ├── UpstreamErrorIllustration.tsx  (lab-mouse mascot, this error state only)
         └── FeedbackFlagControl.tsx
 components/
 ├── AnalyzeBarPill.tsx              (friction-less — no submit button, see lib/hooks/useNctIdAutoSubmit.ts)
@@ -370,7 +371,7 @@ Every field in `EvidenceItem` and every claim inside `bottomLine`/`guardrail` mu
 - **Error responses:**
   - `400 { "error": "invalid_format" }` — malformed NCT ID (defense-in-depth; client already blocks this).
   - `404 { "error": "trial_not_found" }` — well-formed ID, no matching study.
-  - `502 { "error": "upstream_failure", "retryable": true }` — ClinicalTrials.gov or Anthropic failure after one retry.
+  - `502 { "error": "upstream_failure", "retryable": true, "source": "clinicaltrials_gov" | "reasoning_service" }` — ClinicalTrials.gov or Anthropic failure after one retry; `source` names which one, for `{component.upstream-error-state}`.
   - `500 { "error": "internal_error" }` — schema validation failure on the LLM response after retry, or unhandled exception.
 - **Validation rules:** NCT ID format checked before any external call; LLM response Zod-validated before being returned — a validation failure is treated as a `500`, never partially forwarded.
 

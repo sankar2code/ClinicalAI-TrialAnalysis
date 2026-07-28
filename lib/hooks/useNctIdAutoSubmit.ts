@@ -7,7 +7,7 @@ const NCT_ID_PATTERN = /^NCT\d{8}$/;
 // Any value that could still become a valid NCT ID by typing more
 // characters — "N", "NC", "NCT", "NCT0", ... "NCT1234567" (7 digits).
 const NCT_PREFIX_PATTERN = /^N(C(T(\d{0,8})?)?)?$/;
-const AUTO_NAVIGATE_DELAY_MS = 450;
+const AUTO_NAVIGATE_DELAY_MS = 900;
 
 export type NctIdStatus = "empty" | "typing" | "valid" | "invalid";
 
@@ -21,13 +21,13 @@ function classify(raw: string): NctIdStatus {
 
 // Shared friction-less NCT ID input logic for `analyze-bar-pill` and
 // `nav-search` (design.md) — no submit button on either: the moment the
-// value fully matches NCT + 8 digits, it auto-navigates after a brief
-// pause (long enough to register the green check before the page
-// changes underneath it). A value that's still a valid *prefix* of the
-// pattern ("N", "NCT", "NCT042...") stays neutral rather than flashing
-// red partway through typing — only a value that can no longer become
-// valid (wrong prefix, too long, a non-digit after "NCT") shows the
-// error state immediately.
+// value fully matches NCT + 8 digits, it auto-navigates after a pause
+// (900ms — long enough for the green check to visibly settle in before
+// the page changes underneath it, not an instant jump). A value that's
+// still a valid *prefix* of the pattern ("N", "NCT", "NCT042...") is
+// "typing" (pending/amber in both bars) rather than an error — only a
+// value that can no longer become valid (wrong prefix, too long, a
+// non-digit after "NCT") shows the error state immediately.
 export function useNctIdAutoSubmit() {
   const [value, setValue] = useState("");
   const router = useRouter();

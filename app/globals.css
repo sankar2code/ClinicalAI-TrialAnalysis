@@ -34,11 +34,12 @@
      consistency across the app's (still very limited) use of green. */
   --color-success: #15803d;
   /* Third state on the same bars: value is a valid *prefix* of the
-     pattern (still being typed, not yet complete/not yet wrong).
-     Distinct from stat-active-accent's amber — that's a trial-status
-     color, this is a form-state color; keeping them different hues
-     avoids the two concepts bleeding into each other visually. */
-  --color-pending: #a16207;
+     pattern (still being typed, not yet complete/not yet wrong). A
+     clean yellow rather than a browner amber, so it reads unambiguously
+     as "yellow" — and stays distinct from stat-active-accent's
+     orange-leaning amber, a separate trial-status color, not a form-
+     state one. */
+  --color-pending: #eab308;
   --shadow-card: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0;
   /* Decorative-only, HeroPreviewCard's stacked back-cards. NOT part of
      the core token system — everywhere else in this app deliberately

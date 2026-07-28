@@ -5,7 +5,7 @@ import ValidIdCheck from "./ValidIdCheck";
 
 const BORDER_BY_STATUS = {
   empty: "border-hairline",
-  typing: "border-hairline",
+  typing: "border-pending",
   valid: "border-success",
   invalid: "border-error",
 };
@@ -14,7 +14,9 @@ const BORDER_BY_STATUS = {
 // by design — no submit button. A value that fully matches NCT + 8
 // digits auto-navigates itself (useNctIdAutoSubmit); the border and the
 // trailing check are just what makes that state visible before the page
-// changes underneath it.
+// changes underneath it. The format hint below is always shown, not
+// just on error — so the format is known before anyone has to get it
+// wrong first.
 export default function AnalyzeBarPill() {
   const { value, setValue, status } = useNctIdAutoSubmit();
 
@@ -41,11 +43,9 @@ export default function AnalyzeBarPill() {
         </div>
         {status === "valid" && <ValidIdCheck size={40} />}
       </div>
-      {status === "invalid" && (
-        <p role="alert" className="mt-3 px-4 text-body-sm text-error">
-          Enter the NCT ID in correct format/length
-        </p>
-      )}
+      <p className="mt-3 px-4 text-body-sm text-muted">
+        Format: 3 letters followed by 8 digits (e.g. NCT12345678)
+      </p>
     </div>
   );
 }

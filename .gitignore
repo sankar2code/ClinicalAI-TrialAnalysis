@@ -21,3 +21,8 @@ next-env.d.ts
 
 # logs
 npm-debug.log*
+
+# editor / local tool settings
+.claude/settings.local.json
+.vscode/
+.idea/

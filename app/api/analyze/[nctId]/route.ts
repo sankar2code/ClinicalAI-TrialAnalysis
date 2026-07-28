@@ -4,6 +4,13 @@ import { analyzeTrial } from "@/lib/pipeline/analyzeTrial";
 import { toErrorResponse } from "@/lib/errors";
 import { isRateLimited } from "@/lib/rateLimit";
 
+// The reasoning pass genuinely takes 20-40s (PRD.md/engineering-doc.md).
+// Vercel serverless functions default to a 10s execution limit unless
+// this is set explicitly — without it, every failure-status analysis on
+// Vercel gets killed mid-request and surfaces as a generic
+// "Something went wrong" upstream_failure. 60s is the Hobby-plan max.
+export const maxDuration = 60;
+
 // GET /api/analyze/[nctId] — see docs/engineering/engineering-doc.md
 // Section 9 for the full response contract. `params` is a Promise as of
 // Next.js 15+ (this app is on 16) — must be awaited before use.

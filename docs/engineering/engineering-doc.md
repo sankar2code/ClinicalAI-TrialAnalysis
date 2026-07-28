@@ -184,7 +184,7 @@ lib/
 
 ## 6. Backend Architecture
 
-**Stack:** Next.js Route Handlers (serverless functions on Vercel — matches the PRD's stated Vercel hosting budget), TypeScript, Zod for request/response schema validation.
+**Stack:** Next.js Route Handlers (serverless functions on Vercel — matches the PRD's stated Vercel hosting budget), TypeScript, Zod for request/response schema validation. `app/api/analyze/[nctId]/route.ts` exports `maxDuration = 60` — Vercel's default serverless timeout (10s) is shorter than the reasoning pass (20-40s), so without this every failure-status analysis was getting killed mid-request on production and surfacing as a generic upstream_failure.
 
 **Core systems:**
 - **No auth/authz** — every route is public; this is a deliberate scope decision (PRD Non-Goals), not an omission.

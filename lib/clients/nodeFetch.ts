@@ -31,10 +31,23 @@ function headersToObject(headers?: HeadersInit): Record<string, string> {
   return result;
 }
 
-export async function nodeHttpsFetch(
-  input: string | URL,
-  init: FetchInit = {}
-): Promise<Response> {
+// Vercel's serverless runtime is a different network path than the local
+// dev machine this shim was built for — this transport was seen failing
+// fast (<1s, connection-level) there instead of hitting the slow
+// "Premature close" symptom above. Rather than guess which environment
+// has which bug, try the raw-https transport first (works locally) and
+// fall back to the platform's native fetch on any failure (works on
+// Vercel) — whichever transport is actually broken in a given
+// environment, the other one covers it.
+export async function nodeHttpsFetch(input: string | URL, init: FetchInit = {}): Promise<Response> {
+  try {
+    return await rawHttpsFetch(input, init);
+  } catch (err) {
+    return fetch(input, init as RequestInit);
+  }
+}
+
+async function rawHttpsFetch(input: string | URL, init: FetchInit = {}): Promise<Response> {
   const url = new URL(typeof input === "string" ? input : input.toString());
   const isHttps = url.protocol === "https:";
   const transport = isHttps ? https : http;

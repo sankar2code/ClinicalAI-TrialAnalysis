@@ -123,6 +123,7 @@ User pastes NCT ID
 **North Star metric:** **Analyses completed with zero unlabeled causal claims** — this single metric captures both usage and the product's core credibility promise (a labeled-but-unused product or an unlabeled-but-used one both fail the actual goal).
 
 **Primary metrics:**
+
 | Metric | Baseline | Target (90 days post-launch) |
 |---|---|---|
 | Analyses completed | 0 | 1,000 |

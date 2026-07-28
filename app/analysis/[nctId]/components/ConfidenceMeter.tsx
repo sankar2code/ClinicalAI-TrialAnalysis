@@ -24,14 +24,18 @@ const COLOR_CLASSES: Record<Confidence, { bar: string; text: string }> = {
 
 // design.md `confidence-meter`: compact repeatable 4-segment fill bar —
 // the restrained, per-card substitute for the source system's one-time
-// 64px rating-display.
+// 64px rating-display. Always right-aligned within its own column
+// (`items-end`) and pinned to the right edge of `hypothesis-card`'s
+// header (`ml-auto`) — even once the title wraps to two lines and pushes
+// the meter onto its own row, it stays right-aligned rather than
+// dropping to the header's left edge.
 export default function ConfidenceMeter({ level }: { level: Confidence }) {
   const activeIndex = LEVELS.findIndex((l) => l.key === level);
   const activeLabel = LEVELS[activeIndex]?.label ?? "Low";
   const colors = COLOR_CLASSES[level];
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="ml-auto flex shrink-0 flex-col items-end gap-1">
       <div className="flex gap-1" role="img" aria-label={`Confidence: ${activeLabel}`}>
         {LEVELS.map((l, i) => (
           <span

@@ -72,6 +72,15 @@ const config: Config = {
             accent: "var(--color-stat-active-accent)",
           },
         },
+        // ConfidenceMeter's 4 levels — a deliberate, explicit reversal of
+        // this app's original grayscale-only certainty rule. See
+        // globals.css for why Low/Very High reuse error/success.
+        confidence: {
+          low: "var(--color-confidence-low)",
+          medium: "var(--color-confidence-medium)",
+          high: "var(--color-confidence-high)",
+          "very-high": "var(--color-confidence-very-high)",
+        },
       },
       fontFamily: {
         sans: [

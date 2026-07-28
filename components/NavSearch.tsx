@@ -22,13 +22,16 @@ const BORDER_BY_STATUS = {
 // (useNctIdAutoSubmit). No format hint here (unlike analyze-bar-pill) —
 // this is a compact, secondary entry point; the border color alone
 // carries the state, and the full explanation lives on the homepage's
-// primary bar.
+// primary bar. Same as analyze-bar-pill, the Rausch focus ring only
+// shows while empty — once there's a value, the border color is already
+// the state signal, and a second ring color next to it just clashes.
 export default function NavSearch() {
   const { value, setValue, status } = useNctIdAutoSubmit();
+  const ringClass = status === "empty" ? "focus-within:ring-2 focus-within:ring-primary" : "";
 
   return (
     <div
-      className={`hidden h-10 items-center gap-1 rounded-full border bg-canvas pl-4 pr-1 transition-colors focus-within:ring-2 focus-within:ring-primary md:flex ${BORDER_BY_STATUS[status]}`}
+      className={`hidden h-10 items-center gap-1 rounded-full border bg-canvas pl-4 pr-1 transition-colors md:flex ${ringClass} ${BORDER_BY_STATUS[status]}`}
     >
       <label htmlFor="nav-nct-id" className="sr-only">
         NCT ID

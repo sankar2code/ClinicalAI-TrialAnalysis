@@ -62,6 +62,17 @@
   --color-stat-recruiting-accent: #1d4ed8;
   --color-stat-active-bg: #fdf1e6;
   --color-stat-active-accent: #b45309;
+  /* Explicit, deliberate reversal of this app's original "certainty
+     stays grayscale, never colored" rule (see design.md Overview) — a
+     red→green ramp across ConfidenceMeter's 4 levels, on user request.
+     Low/Very High reuse {colors.error}/{colors.success} (fitting reuse:
+     low confidence genuinely is a caution signal, very high genuinely is
+     a trust signal); Medium/High are two new intermediate stops
+     completing the ramp. */
+  --color-confidence-low: var(--color-error);
+  --color-confidence-medium: #c2650a;
+  --color-confidence-high: #65a30d;
+  --color-confidence-very-high: var(--color-success);
 }
 
 .dark {
@@ -95,6 +106,10 @@
   --color-stat-recruiting-accent: #60a5fa;
   --color-stat-active-bg: #2b2418;
   --color-stat-active-accent: #fbbf24;
+  --color-confidence-low: var(--color-error);
+  --color-confidence-medium: #fb923c;
+  --color-confidence-high: #a3e635;
+  --color-confidence-very-high: var(--color-success);
 }
 
 * {
